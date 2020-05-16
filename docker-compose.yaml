@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  reverseproxy:
+    image: traefik:v2.2.1
+    command: --api --providers.docker --logLevel=DEBUG
+    ports:
+      - 80:80
+      - 8080:8080
+      - 3306:3306
+    volumes:
+      - ./traefik.toml:/etc/traefik/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    networks:
+      - traefik
+  mysql:
+    image: mysql:5.7.21
+    # image: itsthenetwork/alpine-tcpdump:latest
+    volumes:
+      - ./_data/mysql/:/var/lib/mysql
+      - ./mysql/conf.d:/etc/mysql/conf.d
+
+    environment:
+      MYSQL_DATABASE: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_ROOT_HOST: mysql.api.local
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
+      # - "traefik.tcp.routers.mysql.rule=HostSNI(`mysql.api.local`)"
+      - "traefik.tcp.routers.mysql.entryPoints=mysql"
+    # restart: always
+    command: --general-log
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external:
+      name: traefik
+
+networks:
+  traefik:
