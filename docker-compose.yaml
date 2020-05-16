@@ -9,7 +9,7 @@ services:
       - 8080:8080
       - 3306:3306
     volumes:
-      - ./traefik.toml:/etc/traefik/traefik.toml
+      - ./traefik/traefik.toml:/etc/traefik/traefik.toml
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     networks:
