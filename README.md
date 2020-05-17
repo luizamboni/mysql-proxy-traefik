@@ -3,6 +3,11 @@ This poc is a study of how traefik can be used as a mysql proxy
 and the observation os mysql packages can be used to provida a mechanism
 of replication data when binary mysql log is not disponible.
 
+# envronment
+	- has used mysql 5.7
+	- ssl has disabled in connection
+	- nodejs v8.17.0 
+
 # run
 ```shell
 $ docker-compose up
@@ -11,7 +16,7 @@ $ docker-compose up
 # try
 disable ssl: this poc not cover ssl encryptation
 ```shell
-$ mysql -u admin -h  mysql.api.local -padmin --skip-ssl
+$ mysql -u admin -h  mysql.api.local -padmin --skip-ssl --compression-algorithms=uncompressed
 ```
 
 run your sql commands
@@ -29,7 +34,8 @@ COLLATE=latin5_turkish_ci;
 
 
 ```shell
-watch "mysql -u admin -h  mysql.api.local -padmin --skip-ssl -e 'select * from admin.users;' "
+$ mysql -u admin -h  mysql.api.local -padmin ---compression-algorithms=uncompressed --skip-ssl -e 'select * from admin.users;'
+$ watch "mysql -u admin -h  mysql.api.local -padmin ---compression-algorithms=uncompressed --skip-ssl -e 'select * from admin.users;'"
 ```
 
 
